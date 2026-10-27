@@ -18,18 +18,29 @@ export default function ContactDetailsPanel({
 }: ContactDetailsPanelProps) {
   const [draft, setDraft] = useState<Contact>({ ...contact, labels: [...contact.labels] });
   const [labelInput, setLabelInput] = useState('');
+  const [prevContact, setPrevContact] = useState<Contact>(contact);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Reset draft when a different contact is selected
-  useEffect(() => {
+  // Synchronize draft if contact prop updates externally
+  if (contact !== prevContact) {
+    setPrevContact(contact);
     setDraft({ ...contact, labels: [...contact.labels] });
     setLabelInput('');
-  }, [contact]);
+  }
 
-  // Focus trap: focus the panel when it opens
+  // Handle focus and Escape key to close panel
   useEffect(() => {
     panelRef.current?.focus();
-  }, [contact.id]);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
 
   const hasChanges =
     draft.name !== contact.name ||
@@ -43,7 +54,9 @@ export default function ContactDetailsPanel({
 
   const handleSave = () => {
     if (!draft.name.trim()) return;
-    onSave({ ...draft, name: draft.name.trim() });
+    const updated = { ...draft, name: draft.name.trim() };
+    setDraft(updated);
+    onSave(updated);
   };
 
   const handleCancel = () => {
@@ -73,12 +86,15 @@ export default function ContactDetailsPanel({
     }
   };
 
-  const initials = contact.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials =
+    contact.name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?';
 
   return (
     <div
@@ -86,6 +102,7 @@ export default function ContactDetailsPanel({
       tabIndex={-1}
       className="flex h-full flex-col border-l border-surface-200 bg-white outline-none"
       role="dialog"
+      aria-modal="true"
       aria-label={`Details for ${contact.name}`}
     >
       {/* Panel Header */}

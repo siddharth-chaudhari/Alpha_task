@@ -9,17 +9,20 @@ interface ContactCardProps {
 }
 
 export default function ContactCard({ contact, isSelected, onClick }: ContactCardProps) {
-  const initials = contact.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials =
+    contact.name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?';
 
   return (
     <button
       onClick={onClick}
-      aria-label={`Open details for ${contact.name}`}
+      aria-label={`Open details for ${contact.name || 'Unnamed contact'}`}
       className={`focus-ring group w-full rounded-xl border bg-white p-4 text-left transition-all duration-150 hover:shadow-md ${
         isSelected
           ? 'border-primary-300 shadow-md ring-1 ring-primary-200'
@@ -32,7 +35,9 @@ export default function ContactCard({ contact, isSelected, onClick }: ContactCar
           {initials}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-surface-900">{contact.name}</p>
+          <p className="truncate text-sm font-semibold text-surface-900">
+            {contact.name || <span className="text-surface-400 italic">Unnamed Contact</span>}
+          </p>
           {contact.role ? (
             <p className="truncate text-xs text-surface-400">{contact.role}</p>
           ) : (

@@ -112,10 +112,11 @@ export default function App() {
         {/* Details panel */}
         {selectedContact && (
           <aside
-            className="w-full shrink-0 overflow-hidden border-surface-200 bg-white shadow-xl sm:w-[420px] lg:w-[460px]"
+            className="fixed inset-y-0 right-0 z-40 w-full border-l border-surface-200 bg-white shadow-2xl sm:static sm:z-auto sm:w-[420px] sm:shadow-xl lg:w-[460px]"
             style={{ maxHeight: 'calc(100vh - 57px)' }}
           >
             <ContactDetailsPanel
+              key={selectedContact.id}
               contact={selectedContact}
               onSave={handleSaveContact}
               onClose={handleClosePanel}

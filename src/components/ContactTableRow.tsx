@@ -9,12 +9,15 @@ interface ContactTableRowProps {
 }
 
 export default function ContactTableRow({ contact, isSelected, onClick }: ContactTableRowProps) {
-  const initials = contact.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const initials =
+    contact.name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((n) => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?';
 
   return (
     <tr
@@ -27,7 +30,7 @@ export default function ContactTableRow({ contact, isSelected, onClick }: Contac
       }}
       tabIndex={0}
       role="button"
-      aria-label={`Open details for ${contact.name}`}
+      aria-label={`Open details for ${contact.name || 'Unnamed contact'}`}
       className={`group cursor-pointer border-b border-surface-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
         isSelected
           ? 'bg-primary-50/60'
@@ -40,7 +43,9 @@ export default function ContactTableRow({ contact, isSelected, onClick }: Contac
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-xs font-semibold text-white">
             {initials}
           </div>
-          <span className="text-sm font-medium text-surface-900">{contact.name}</span>
+          <span className="text-sm font-medium text-surface-900">
+            {contact.name || <span className="text-surface-400 italic">Unnamed Contact</span>}
+          </span>
         </div>
       </td>
 
