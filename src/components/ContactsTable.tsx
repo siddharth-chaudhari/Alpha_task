@@ -34,15 +34,15 @@ export default function ContactsTable({
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-surface-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-surface-200">
-        <thead className="bg-surface-50">
+    <div className="overflow-x-auto rounded-xl border border-surface-200 bg-white shadow-xs dark:border-surface-800 dark:bg-surface-900">
+      <table className="min-w-full divide-y divide-surface-200 dark:divide-surface-800">
+        <thead className="bg-surface-50 dark:bg-surface-800/50">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
                 scope="col"
-                className="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-surface-400 first:pl-4 last:pr-4 sm:first:pl-6 sm:last:pr-6"
+                className="whitespace-nowrap px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-surface-400 dark:text-surface-400 first:pl-4 last:pr-4 sm:first:pl-6 sm:last:pr-6"
               >
                 {col.label}
               </th>

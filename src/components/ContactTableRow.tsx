@@ -31,42 +31,42 @@ export default function ContactTableRow({ contact, isSelected, onClick }: Contac
       tabIndex={0}
       role="button"
       aria-label={`Open details for ${contact.name || 'Unnamed contact'}`}
-      className={`group cursor-pointer border-b border-surface-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
+      className={`group cursor-pointer border-b border-surface-100 dark:border-surface-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
         isSelected
-          ? 'bg-primary-50/60'
-          : 'hover:bg-surface-50'
+          ? 'bg-primary-50/60 dark:bg-primary-950/40'
+          : 'hover:bg-surface-50 dark:hover:bg-surface-800/40'
       }`}
     >
       {/* Name */}
       <td className="whitespace-nowrap py-3 pl-4 pr-3 sm:pl-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-xs font-semibold text-white">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-xs font-semibold text-white shadow-xs">
             {initials}
           </div>
-          <span className="text-sm font-medium text-surface-900">
-            {contact.name || <span className="text-surface-400 italic">Unnamed Contact</span>}
+          <span className="text-sm font-medium text-surface-900 dark:text-surface-100">
+            {contact.name || <span className="text-surface-400 dark:text-surface-500 italic">Unnamed Contact</span>}
           </span>
         </div>
       </td>
 
       {/* Email */}
-      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500">
-        {contact.email || <span className="text-surface-300">—</span>}
+      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500 dark:text-surface-400">
+        {contact.email || <span className="text-surface-300 dark:text-surface-600">—</span>}
       </td>
 
       {/* Company */}
-      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500">
-        {contact.company || <span className="text-surface-300">—</span>}
+      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500 dark:text-surface-400">
+        {contact.company || <span className="text-surface-300 dark:text-surface-600">—</span>}
       </td>
 
       {/* Role */}
-      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500">
-        {contact.role || <span className="text-surface-300">—</span>}
+      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500 dark:text-surface-400">
+        {contact.role || <span className="text-surface-300 dark:text-surface-600">—</span>}
       </td>
 
       {/* Owner */}
-      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500">
-        {contact.owner || <span className="text-surface-300">—</span>}
+      <td className="whitespace-nowrap px-3 py-3 text-sm text-surface-500 dark:text-surface-400">
+        {contact.owner || <span className="text-surface-300 dark:text-surface-600">—</span>}
       </td>
 
       {/* Labels */}
@@ -77,7 +77,7 @@ export default function ContactTableRow({ contact, isSelected, onClick }: Contac
               <LabelBadge key={label} label={label} />
             ))
           ) : (
-            <span className="text-sm text-surface-300">—</span>
+            <span className="text-sm text-surface-300 dark:text-surface-600">—</span>
           )}
         </div>
       </td>
@@ -88,8 +88,8 @@ export default function ContactTableRow({ contact, isSelected, onClick }: Contac
       </td>
 
       {/* Notes */}
-      <td className="max-w-[200px] truncate px-3 py-3 pr-4 text-sm text-surface-400 sm:pr-6">
-        {contact.notes || <span className="text-surface-300">—</span>}
+      <td className="max-w-[200px] truncate px-3 py-3 pr-4 text-sm text-surface-400 dark:text-surface-400 sm:pr-6">
+        {contact.notes || <span className="text-surface-300 dark:text-surface-600">—</span>}
       </td>
     </tr>
   );

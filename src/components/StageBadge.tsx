@@ -2,23 +2,23 @@ import type { Stage } from '../types/contact';
 
 const stageConfig: Record<Stage, { bg: string; text: string; dot: string }> = {
   Lead: {
-    bg: 'bg-amber-50 border-amber-200',
-    text: 'text-amber-700',
+    bg: 'bg-amber-50 border-amber-200 dark:bg-amber-950/40 dark:border-amber-800/60',
+    text: 'text-amber-700 dark:text-amber-300',
     dot: 'bg-amber-400',
   },
   Prospect: {
-    bg: 'bg-sky-50 border-sky-200',
-    text: 'text-sky-700',
+    bg: 'bg-sky-50 border-sky-200 dark:bg-sky-950/40 dark:border-sky-800/60',
+    text: 'text-sky-700 dark:text-sky-300',
     dot: 'bg-sky-400',
   },
   Qualified: {
-    bg: 'bg-violet-50 border-violet-200',
-    text: 'text-violet-700',
+    bg: 'bg-violet-50 border-violet-200 dark:bg-violet-950/40 dark:border-violet-800/60',
+    text: 'text-violet-700 dark:text-violet-300',
     dot: 'bg-violet-400',
   },
   Customer: {
-    bg: 'bg-emerald-50 border-emerald-200',
-    text: 'text-emerald-700',
+    bg: 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950/40 dark:border-emerald-800/60',
+    text: 'text-emerald-700 dark:text-emerald-300',
     dot: 'bg-emerald-400',
   },
 };

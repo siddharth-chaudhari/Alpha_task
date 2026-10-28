@@ -8,12 +8,14 @@ interface ContactsBoardProps {
   contacts: Contact[];
   selectedContactId: string | null;
   onSelectContact: (id: string) => void;
+  onStageChange: (contactId: string, stage: Stage) => void;
 }
 
 export default function ContactsBoard({
   contacts,
   selectedContactId,
   onSelectContact,
+  onStageChange,
 }: ContactsBoardProps) {
   const groupedContacts = useMemo(() => {
     const groups: Record<Stage, Contact[]> = {
@@ -39,6 +41,7 @@ export default function ContactsBoard({
           contacts={groupedContacts[stage]}
           selectedContactId={selectedContactId}
           onSelectContact={onSelectContact}
+          onDropContact={onStageChange}
         />
       ))}
     </div>

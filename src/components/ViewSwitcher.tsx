@@ -16,7 +16,7 @@ export default function ViewSwitcher({ currentView, onViewChange }: ViewSwitcher
 
   return (
     <div
-      className="inline-flex items-center rounded-lg border border-surface-200 bg-white p-0.5"
+      className="inline-flex items-center rounded-lg border border-surface-200 bg-white p-0.5 dark:border-surface-700 dark:bg-surface-800"
       role="tablist"
       aria-label="View mode"
       onKeyDown={handleKeyDown}
@@ -28,8 +28,8 @@ export default function ViewSwitcher({ currentView, onViewChange }: ViewSwitcher
         onClick={() => onViewChange('table')}
         className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-150 ${
           currentView === 'table'
-            ? 'bg-primary-50 text-primary-700 shadow-sm'
-            : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50'
+            ? 'bg-primary-50 text-primary-700 shadow-xs dark:bg-primary-950 dark:text-primary-300'
+            : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50 dark:text-surface-400 dark:hover:text-surface-200 dark:hover:bg-surface-700/50'
         }`}
       >
         <Table2 className="h-4 w-4" />
@@ -42,8 +42,8 @@ export default function ViewSwitcher({ currentView, onViewChange }: ViewSwitcher
         onClick={() => onViewChange('board')}
         className={`focus-ring inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-150 ${
           currentView === 'board'
-            ? 'bg-primary-50 text-primary-700 shadow-sm'
-            : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50'
+            ? 'bg-primary-50 text-primary-700 shadow-xs dark:bg-primary-950 dark:text-primary-300'
+            : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50 dark:text-surface-400 dark:hover:text-surface-200 dark:hover:bg-surface-700/50'
         }`}
       >
         <LayoutGrid className="h-4 w-4" />

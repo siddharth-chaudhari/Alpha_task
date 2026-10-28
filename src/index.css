@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary-50: #eef2ff;
   --color-primary-100: #e0e7ff;
@@ -22,6 +24,7 @@
   --color-surface-700: #404040;
   --color-surface-800: #262626;
   --color-surface-900: #171717;
+  --color-surface-950: #0c0d0e;
 
   --font-family-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
@@ -34,11 +37,11 @@
   }
 
   body {
-    @apply bg-surface-50 text-surface-900;
+    @apply bg-surface-50 text-surface-900 dark:bg-surface-950 dark:text-surface-100 transition-colors duration-150;
   }
 
   * {
-    @apply border-surface-200;
+    @apply border-surface-200 dark:border-surface-800;
   }
 }
 
@@ -53,14 +56,14 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-surface-300 rounded-full;
+  @apply bg-surface-300 dark:bg-surface-700 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-surface-400;
+  @apply bg-surface-400 dark:bg-surface-600;
 }
 
 /* Focus ring utility */
 .focus-ring {
-  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-surface-900;
 }

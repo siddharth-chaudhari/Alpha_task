@@ -79,18 +79,35 @@ To deploy to **Netlify**, push the repository and configure:
 ### Board View (Kanban)
 - Four fixed columns: Lead, Prospect, Qualified, Customer.
 - Contact count in each column header.
-- Attractive cards with avatar, name, role, company, owner, and label badges.
+- **Drag-and-Drop**: Drag cards between columns to update stage immediately. Supports dropping into empty columns with active visual drop targets and grabbing cursor affordance.
+- Attractive cards with avatar, name, role, company, owner, grip handle, and label badges.
 - Empty state message for columns with zero contacts.
 - Scrollable within each column for many contacts.
-- Clicking a card opens the same contact details panel.
+- Clicking a card opens the same contact details panel (drag-protected to avoid accidental clicks).
 
-### Contact Details Panel
-- Right-side panel (full width on narrow screens).
+### Contact Details Drawer
+- Resizable right-side drawer (320px min, up to 720px max, default 420px) with persistent width in `localStorage`.
+- Left-edge drag handle with hover/focus indicator and ArrowLeft/ArrowRight keyboard support.
+- Fully responsive: full-width on mobile viewports.
+- Smooth slide-in and slide-out transitions (200ms) with animated backdrop opacity and reduced-motion support.
+- **Outside-Click Closing**: Clicking the backdrop closes the drawer.
+- **Unsaved Changes Confirmation**: If draft is modified, clicking outside, pressing Escape, or clicking Close prompts a confirmation dialog ("Keep Editing" / "Discard Changes"). Clean close if no changes.
 - Editable fields: Name, Email, Company, Role, Owner, Stage (select), Labels (add/remove), Notes (textarea).
-- **Save Changes** button (disabled when no changes detected).
-- **Cancel** button to discard unsaved edits.
-- Closing the panel (X button) does not save changes.
-- Closing preserves the current Table or Board view.
+- **Save Changes** button with validation feedback.
+- **Cancel** button to discard unsaved edits without exiting.
+
+### Notifications (Toast System)
+- Top-right toast notifications positioned below the navbar.
+- Success toasts on save ("Contact updated successfully." or "Contact created successfully." for new contacts).
+- Error toasts on validation failures (e.g. empty name).
+- Auto-dismiss after ~3s and manual dismiss button.
+- ARIA live region support and rapid-save deduplication.
+
+### Theme Switching (Dark & Light Mode)
+- Navbar toggle button with Sun and Moon icons.
+- Class-based theme switching compatible with Tailwind CSS v4.
+- Full color scheme support across navbar, tables, cards, board columns, drawer, inputs, dialogs, badges, and toasts.
+- Preference persisted in `localStorage` (`alpha_crm_theme`) with system preference detection and zero-flash inline head script.
 
 ### Search
 - Case-insensitive search across name, email, and company.
@@ -114,23 +131,26 @@ contacts          — the saved array of Contact records (source of truth)
 currentView       — 'table' | 'board'
 selectedContactId — ID of the currently opened contact, or null
 searchQuery       — the current search string
+theme             — 'light' | 'dark'
+toasts            — active Toast notifications array
 ```
 
 ### Key design decisions
 
-1. **Single source of truth**: Both views derive their records from the same `contacts` array. There are no separate copies for Table and Board.
+1. **Single source of truth**: Both views derive their records from the same `contacts` array. Drag-and-drop and drawer editing update the exact same canonical state.
 2. **Draft-based editing**: The `ContactDetailsPanel` creates a local `draft` copy via `useState`. Editing the draft never mutates the saved contact. Only clicking "Save" writes back to the canonical state.
 3. **Immutable updates**: All state updates use functional updaters (`setContacts(prev => prev.map(...))`) — no direct mutation of arrays or objects.
 4. **Derived values via `useMemo`**: Filtered contacts and the selected contact are computed from canonical state, avoiding stale or duplicated data.
-5. **Stable IDs**: Contacts are identified by their `id` field. Stage changes, saves, and view switches all key off this stable identifier.
+5. **Stable IDs**: Contacts are identified by their `id` field. Stage changes, drag-and-drop moves, saves, and view switches all key off this stable identifier.
 6. **View independence**: Switching between Table and Board does not reset, duplicate, or lose any data. The `currentView` flag is orthogonal to the contacts dataset.
 
 ### Synchronization guarantees
 
 - Saving a stage change immediately moves the contact into the correct Board column and updates the Table row.
+- Dragging a card to a new column immediately updates the contact's stage in the Table View and canonical state.
 - Repeated view switches are safe: no duplication, no data loss.
 - Cancel discards the draft and resets to the last saved values.
-- The close button discards unsaved changes without saving.
+- Unsaved changes are protected by a confirmation modal on backdrop click, Escape key, or close button.
 
 ---
 
@@ -139,51 +159,49 @@ searchQuery       — the current search string
 ```
 src/
 ├── components/
-│   ├── AppHeader.tsx           — Header with search, view toggle, add button
-│   ├── ViewSwitcher.tsx        — Table/Board toggle tabs
-│   ├── ContactsTable.tsx       — Table container and column headers
-│   ├── ContactTableRow.tsx     — Individual table row with badges
-│   ├── ContactsBoard.tsx       — Board layout grouping contacts by stage
-│   ├── BoardColumn.tsx         — Single Kanban column with header and cards
-│   ├── ContactCard.tsx         — Card component for the board view
-│   ├── ContactDetailsPanel.tsx — Right-side editable details panel
-│   ├── StageBadge.tsx          — Colored stage indicator badge
-│   ├── LabelBadge.tsx          — Colored label badge
-│   └── EmptyState.tsx          — Reusable empty state with icon
+│   ├── AppHeader.tsx            — Header with search, theme toggle, view toggle, add button
+│   ├── ViewSwitcher.tsx         — Table/Board toggle tabs with keyboard arrow navigation
+│   ├── ContactsTable.tsx        — Table container and column headers
+│   ├── ContactTableRow.tsx      — Individual table row with badges & dark styles
+│   ├── ContactsBoard.tsx        — Board layout grouping contacts by stage
+│   ├── BoardColumn.tsx          — Kanban column with drop target & count badge
+│   ├── ContactCard.tsx          — Draggable card component with grab affordance
+│   ├── ContactDetailsPanel.tsx  — Resizable drawer with backdrop, transitions & confirmation
+│   ├── ConfirmDiscardDialog.tsx — Modal confirmation for unsaved changes
+│   ├── Toast.tsx                — Accessible toast notifications container & items
+│   ├── StageBadge.tsx           — Colored stage indicator badge (light & dark)
+│   ├── LabelBadge.tsx           — Colored label badge (light & dark)
+│   └── EmptyState.tsx           — Reusable empty state with icon
 ├── data/
-│   └── contacts.ts             — 10 fictional initial contacts
+│   └── contacts.ts              — 10 fictional initial contacts
 ├── types/
-│   └── contact.ts              — Contact interface & Stage/ViewMode types
-├── App.tsx                     — Root component with canonical state
-├── main.tsx                    — Entry point
-└── index.css                   — Tailwind v4 import & design tokens
+│   ├── contact.ts               — Contact interface & Stage/ViewMode types
+│   └── toast.ts                 — ToastMessage & ToastType definitions
+├── App.tsx                      — Root component with canonical state & theme management
+├── main.tsx                     — Entry point
+└── index.css                    — Tailwind v4 import, custom dark variant & tokens
 ```
 
 ## Design Choices
 
 - **Indigo/lavender accent palette** with neutral grays for a professional SaaS appearance.
+- **Full Dark Mode support** with high-contrast surfaces (`surface-900` / `surface-950`).
 - **Inter font** (Google Fonts) for clean, modern typography.
 - **Glassmorphism header** with `backdrop-blur` for depth.
-- **Gradient avatar circles** instead of placeholder images for personality without external assets.
-- **Consistent rounded corners** (rounded-lg/xl) throughout.
-- **Subtle transitions** (150ms) on interactive elements — hover, focus, selection.
-- **Custom scrollbars** for a polished feel.
-- **Accessible controls**: ARIA roles, keyboard focus rings, semantic HTML, labeled form inputs.
+- **Gradient avatar circles** with initials and safe fallbacks.
+- **Subtle transitions** (150–200ms) on interactive elements, respecting `prefers-reduced-motion`.
+- **Custom scrollbars** for both light and dark themes.
+- **Accessible controls**: ARIA roles, live regions, keyboard focus rings, semantic HTML, labeled form inputs.
 
 ## Trade-offs
 
-- **No drag-and-drop**: Omitted in favor of a reliable stage dropdown in the details panel. DnD would add complexity without improving the core evaluation criteria.
-- **No persistent storage**: State resets on page refresh. Adding `localStorage` persistence would be a small enhancement.
-- **No sorting/filtering beyond search**: Could be extended with column header sort toggles and filter dropdowns.
-- **No confirmation dialog for unsaved changes**: Closing the panel silently discards the draft. A "Discard changes?" modal would improve UX.
+- **HTML5 native drag-and-drop**: Zero runtime bundle bloat and 100% React 19 compatibility without external package peer-dependency conflicts.
+- **No persistent contact storage**: Contact mutations reset on page refresh (theme and drawer width preferences are persisted in `localStorage`).
+- **No column sorting beyond search**: Search provides instant filtering; column sorting can be added as a future enhancement.
 
 ## What Could Be Improved
 
-- Add `localStorage` or `IndexedDB` persistence so data survives page refreshes.
-- Implement drag-and-drop for stage transitions on the board.
-- Add column sorting (click column headers to sort).
-- Add a confirmation modal when discarding unsaved changes.
-- Add pagination or virtualization for large contact lists.
+- Add `localStorage` or `IndexedDB` persistence so contact modifications survive page refreshes.
+- Add column sorting (click column headers to sort by Name, Company, Stage, etc.).
+- Add pagination or virtualization for large contact lists (1,000+ contacts).
 - Add unit tests with Vitest and component tests with React Testing Library.
-- Add keyboard shortcuts (Escape to close panel, etc.).
-- Implement a proper responsive mobile layout for the board view.
